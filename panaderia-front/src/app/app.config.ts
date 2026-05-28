@@ -1,0 +1,27 @@
+import { ApplicationConfig, importProvidersFrom } from '@angular/core';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideRouter } from '@angular/router';
+import { routes } from './app.routes';
+import { authInterceptor } from './core/interceptors/auth.interceptor';
+import {
+  LucideAngularModule,
+  LayoutDashboard, ShoppingBag, Package, Users, Receipt,
+  LogOut, Settings, Bell, Search, Plus, TrendingUp, RefreshCw,
+  ShoppingCart, Minus, Eye, CheckCircle, Printer, X, Edit2, Trash2,
+  PlusCircle, AlertCircle, Info, ArrowUp, ArrowDown
+} from 'lucide-angular';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideRouter(routes),
+    provideHttpClient(withInterceptors([authInterceptor])),
+    importProvidersFrom(
+      LucideAngularModule.pick({
+        LayoutDashboard, ShoppingBag, Package, Users, Receipt,
+        LogOut, Settings, Bell, Search, Plus, TrendingUp, RefreshCw,
+        ShoppingCart, Minus, Eye, CheckCircle, Printer, X, Edit2, Trash2,
+        PlusCircle, AlertCircle, Info, ArrowUp, ArrowDown
+      })
+    )
+  ]
+};

@@ -1,0 +1,18 @@
+# macOS
+.DS_Store
+
+# ── Backend ──────────────────────────────
+panaderia-api/target/
+panaderia-api/.mvn/wrapper/maven-wrapper.jar
+panaderia-api/src/main/resources/static/
+
+# ── Frontend ─────────────────────────────
+panaderia-front/node_modules/
+panaderia-front/dist/
+panaderia-front/.angular/
+
+# IDEs
+.idea/
+*.iml
+.vscode/
+.claude/

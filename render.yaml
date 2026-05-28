@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: panaderia-pro
+    runtime: java
+    buildCommand: |
+      cd panaderia-front && npm install && npm run build -- --configuration production
+      cd ../panaderia-api && ./mvnw clean package -DskipTests
+    startCommand: java -jar panaderia-api/target/panaderia-api-1.0.0.jar
+    healthCheckPath: /api/v1/auth/health
+    envVars:
+      - key: SPRING_DATASOURCE_URL
+        value: jdbc:postgresql://dpg-d8bs2igjo6nc73eabj40-a.ohio-postgres.render.com:5432/panaderia_oof6?sslmode=require
+      - key: SPRING_DATASOURCE_USERNAME
+        value: panaderia_user
+      - key: SPRING_DATASOURCE_PASSWORD
+        value: s4b2pXoSK67FjNHbTcKMHjBtefzBx9iW
+      - key: JWT_SECRET
+        value: clave-super-secreta-panaderia-2024-muy-larga-para-seguridad
+      - key: JWT_EXPIRATION
+        value: "86400000"
+      - key: JAVA_TOOL_OPTIONS
+        value: "-Xmx512m"
