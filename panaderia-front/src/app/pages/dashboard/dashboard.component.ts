@@ -176,6 +176,12 @@ import { LucideAngularModule } from 'lucide-angular';
     @media (max-width: 768px) { .stat-grid, .skeleton-grid { grid-template-columns: 1fr; } }
   `]
 })
+/**
+ * Componente Dashboard — Vista principal del sistema.
+ * Carga ventas y productos en paralelo usando forkJoin (RxJS).
+ * Se refresca automáticamente cada 30 segundos con interval().
+ * Implementa OnDestroy para limpiar la suscripción y evitar memory leaks.
+ */
 export class DashboardComponent implements OnInit, OnDestroy {
   private facturaService = inject(FacturaService);
   private productoService = inject(ProductoService);
@@ -183,21 +189,23 @@ export class DashboardComponent implements OnInit, OnDestroy {
   resumen: any = null;
   productos: Producto[] = [];
   cargando = true;
-  stockBajoCount = 0;
-  sinStockCount = 0;
+  stockBajoCount = 0; // productos con 1-4 unidades
+  sinStockCount = 0;  // productos con 0 unidades
   private refrescoSub?: Subscription;
 
   ngOnInit(): void {
     this.cargarDashboard();
+    // interval(): emite cada 30s → refresca los datos automáticamente
     this.refrescoSub = interval(30000).subscribe(() => this.cargarDashboard());
   }
 
   ngOnDestroy(): void {
-    this.refrescoSub?.unsubscribe();
+    this.refrescoSub?.unsubscribe(); // evita memory leak al destruir el componente
   }
 
   cargarDashboard(): void {
     this.cargando = true;
+    // forkJoin: ejecuta ambas peticiones en paralelo y espera las dos respuestas
     forkJoin({
       resumen: this.facturaService.resumenDiario(),
       productos: this.productoService.listar()

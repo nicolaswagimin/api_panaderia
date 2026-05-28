@@ -15,9 +15,15 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Implementación del servicio de facturas — Patrón Service + Abstracción (POO).
+ * Contiene la lógica de negocio: valida stock, descuenta inventario,
+ * genera número de factura y construye la respuesta.
+ * Implementa la interfaz FacturaService → Abstracción.
+ */
 @Service
-@RequiredArgsConstructor
-@Transactional
+@RequiredArgsConstructor  // Lombok inyecta los repositorios por constructor
+@Transactional            // cada método se ejecuta en una transacción de BD
 public class FacturaServiceImpl implements FacturaService {
 
     private final FacturaRepository facturaRepository;
@@ -27,6 +33,7 @@ public class FacturaServiceImpl implements FacturaService {
 
     @Override
     public FacturaResponse crear(FacturaRequest request, String usuarioCajero) {
+        // El cliente es opcional: si no se indica, la venta es a "Consumidor Final"
         Cliente cliente = null;
         if (request.getClienteId() != null) {
             cliente = clienteRepository.findById(request.getClienteId())
@@ -36,6 +43,7 @@ public class FacturaServiceImpl implements FacturaService {
         List<DetalleFactura> detalles = new ArrayList<>();
         BigDecimal total = BigDecimal.ZERO;
 
+        // Recorre cada ítem del carrito y valida stock antes de facturar
         for (DetalleFacturaRequest dr : request.getDetalles()) {
             Producto producto = productoRepository.findById(dr.getProductoId())
                     .orElseThrow(() -> new RecursoNoEncontradoException("Producto", dr.getProductoId()));
@@ -43,11 +51,13 @@ public class FacturaServiceImpl implements FacturaService {
             Inventario inventario = inventarioRepository.findByProductoId(dr.getProductoId())
                     .orElseThrow(() -> new RecursoNoEncontradoException("Inventario", dr.getProductoId()));
 
+            // Lanza excepción personalizada si no hay stock suficiente
             if (!inventario.tieneStockSuficiente(dr.getCantidad())) {
                 throw new StockInsuficienteException(
                         producto.getDescripcion(), dr.getCantidad(), inventario.getStockActual());
             }
 
+            // Construye el detalle con el precio vigente en el momento de la venta
             DetalleFactura detalle = DetalleFactura.builder()
                     .producto(producto)
                     .cantidad(dr.getCantidad())
@@ -57,11 +67,12 @@ public class FacturaServiceImpl implements FacturaService {
             detalles.add(detalle);
             total = total.add(detalle.getSubtotal());
 
-            // Update stock
+            // Descuenta el stock del inventario
             inventario.reducirStock(dr.getCantidad());
             inventarioRepository.save(inventario);
         }
 
+        // Número único usando el ID máximo existente para evitar duplicados
         long consecutivo = facturaRepository.findMaxId() + 1;
         String numeroFactura = CalculadoraFactura.generarNumeroFactura(consecutivo);
 
@@ -113,14 +124,15 @@ public class FacturaServiceImpl implements FacturaService {
         Factura factura = facturaRepository.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Factura", id));
 
+        // Revierte el stock de cada producto que estaba en la factura
         for (DetalleFactura det : factura.getDetalles()) {
             Inventario inv = inventarioRepository.findByProductoId(det.getProducto().getId())
                     .orElseThrow();
-            inv.aumentarStock(det.getCantidad());
+            inv.aumentarStock(det.getCantidad()); // devuelve unidades al inventario
             inventarioRepository.save(inv);
         }
 
-        factura.setActivo(false);
+        factura.setActivo(false); // borrado lógico: la factura queda anulada pero no se borra
         Factura facturaGuardada = facturaRepository.save(factura);
         return mapearAResponse(facturaGuardada);
     }

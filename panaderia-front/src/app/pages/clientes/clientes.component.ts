@@ -200,6 +200,11 @@ import { LucideAngularModule } from 'lucide-angular';
     .btn-save:disabled { opacity: 0.55; cursor: not-allowed; }
   `]
 })
+/**
+ * Componente Clientes — CRUD con búsqueda y edición en modal.
+ * Formulario reactivo con validación de campos (nombre obligatorio, email válido).
+ * El filtrado es client-side: filtra el arreglo local sin llamar al API.
+ */
 export class ClientesComponent implements OnInit {
   private fb = inject(FormBuilder);
   private clienteService = inject(ClienteService);

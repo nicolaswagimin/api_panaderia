@@ -9,15 +9,21 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
+/**
+ * Controlador REST de autenticación.
+ * Maneja login y registro de usuarios.
+ * El login valida credenciales y devuelve un token JWT para las siguientes peticiones.
+ */
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
     private final UsuarioRepository usuarioRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtUtil jwtUtil;
+    private final PasswordEncoder passwordEncoder; // BCrypt: encripta contraseñas
+    private final JwtUtil jwtUtil;                 // genera y valida tokens JWT
 
+    /** Valida usuario/contraseña y retorna JWT + datos del usuario */
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> creds) {
         String username = creds.get("username");

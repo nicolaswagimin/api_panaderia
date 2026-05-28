@@ -9,12 +9,17 @@ import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
+/**
+ * Controlador REST para productos — Patrón MVC (Controller).
+ * Expone los endpoints CRUD del inventario más ajuste de stock.
+ * Delega la lógica al ProductoService → Separación de responsabilidades.
+ */
 @RestController
-@RequestMapping("/api/v1/productos")
+@RequestMapping("/api/v1/productos") // prefijo de todas las rutas de este controlador
 @RequiredArgsConstructor
 public class ProductoController {
 
-    private final ProductoService productoService;
+    private final ProductoService productoService; // inyección por constructor (Lombok)
 
     @PostMapping
     public ResponseEntity<ProductoResponse> crear(@Valid @RequestBody ProductoRequest request) {

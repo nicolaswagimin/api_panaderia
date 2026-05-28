@@ -365,6 +365,12 @@ interface ItemCarrito {
     @media (max-width: 1024px) { .pos-grid { grid-template-columns: 1fr; } }
   `]
 })
+/**
+ * Componente Facturación — Punto de Venta (POS).
+ * Gestiona el carrito de compras, genera facturas y abre una ventana
+ * de impresión con el recibo. Al anular una factura, el stock se restituye.
+ * Interfaz ItemCarrito encapsula los datos del producto en el carrito.
+ */
 export class FacturacionComponent implements OnInit {
   private facturaService = inject(FacturaService);
   private productoService = inject(ProductoService);

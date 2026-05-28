@@ -7,14 +7,22 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.*;
 
+/**
+ * Manejador global de excepciones — Patrón centralizado de errores.
+ * Intercepta todas las excepciones del proyecto y devuelve respuestas
+ * HTTP con formato estándar (timestamp, status, mensaje).
+ * Evita repetir bloques try-catch en cada controlador.
+ */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    /** Recurso no encontrado → HTTP 404 */
     @ExceptionHandler(RecursoNoEncontradoException.class)
     public ResponseEntity<Map<String, Object>> handleNotFound(RecursoNoEncontradoException ex) {
         return buildResponse(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
+    /** Stock insuficiente al facturar → HTTP 409 Conflict */
     @ExceptionHandler(StockInsuficienteException.class)
     public ResponseEntity<Map<String, Object>> handleStock(StockInsuficienteException ex) {
         return buildResponse(HttpStatus.CONFLICT, ex.getMessage());

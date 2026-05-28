@@ -276,10 +276,16 @@ import { LucideAngularModule } from 'lucide-angular';
     .stock-input:focus { border-color: #2d2d2d; }
   `]
 })
+/**
+ * Componente Inventario — CRUD completo de productos.
+ * Permite crear, editar, eliminar y ajustar stock de productos.
+ * Usa Formularios Reactivos (ReactiveFormsModule) con validaciones.
+ * Muestra notificaciones mediante ToastService en lugar de alert().
+ */
 export class ProductosComponent implements OnInit {
-  private fb = inject(FormBuilder);
-  private productoService = inject(ProductoService);
-  private toast = inject(ToastService);
+  private fb = inject(FormBuilder);             // construye formularios reactivos
+  private productoService = inject(ProductoService); // servicio que llama al API REST
+  private toast = inject(ToastService);         // notificaciones no bloqueantes
 
   productos: Producto[] = [];
   productosFiltrados: Producto[] = [];

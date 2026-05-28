@@ -10,6 +10,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
+/**
+ * Controlador REST de facturación — Punto de venta (POS).
+ * Gestiona creación, consulta, anulación de facturas y resumen de ventas.
+ * Obtiene el usuario autenticado desde el contexto de Spring Security.
+ */
 @RestController
 @RequestMapping("/api/v1/facturas")
 @RequiredArgsConstructor
@@ -17,9 +22,11 @@ public class FacturaController {
 
     private final FacturaService facturaService;
 
+    /** Crea una nueva factura y descuenta el stock correspondiente */
     @PostMapping
     public ResponseEntity<FacturaResponse> crear(@Valid @RequestBody FacturaRequest request,
                                                   Authentication auth) {
+        // Authentication viene del token JWT validado por JwtFilter
         String usuario = auth != null ? auth.getName() : "sistema";
         return ResponseEntity.status(HttpStatus.CREATED).body(facturaService.crear(request, usuario));
     }

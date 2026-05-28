@@ -11,11 +11,18 @@ export interface AuthResponse {
   nombre: string;
 }
 
+/**
+ * Servicio de autenticación — patrón Observable (RxJS).
+ * Guarda el JWT en localStorage y gestiona el estado del usuario.
+ * Expone usuario$ como Observable para que los componentes reaccionen
+ * automáticamente a los cambios de sesión.
+ */
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private apiUrl = `${environment.apiV1Url}/auth`;
+  // BehaviorSubject: mantiene el último valor emitido (usuario actual)
   private usuarioSubject = new BehaviorSubject<AuthResponse | null>(this.cargarUsuario());
-  usuario$ = this.usuarioSubject.asObservable();
+  usuario$ = this.usuarioSubject.asObservable(); // Observable público (solo lectura)
 
   constructor(
     private http: HttpClient,
