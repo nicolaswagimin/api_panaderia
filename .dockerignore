@@ -1,0 +1,7 @@
+panaderia-front/node_modules/
+panaderia-front/dist/
+panaderia-front/.angular/
+panaderia-api/target/
+.git/
+.claude/
+*.md
